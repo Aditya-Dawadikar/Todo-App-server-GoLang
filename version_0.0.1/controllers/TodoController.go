@@ -38,9 +38,38 @@ func GetAllTodo(w http.ResponseWriter, req *http.Request) {
 			log.Fatal(err)
 		}
 
+		sql1 := "select * from todo_list_item where tli_list_id='" + todo.Id + "'"
+
+		res1, err1 := db.Query(sql1)
+
+		if err1 != nil {
+			log.Fatal(err1)
+		}
+
+		var itemList []models.ListItem
+		for res1.Next() {
+			var item models.ListItem
+			err := res1.Scan(&item.ItemListId, &item.ItemId, &item.ItemName, &item.ItemStatus, &item.ItemPriority)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			itemList = append(itemList, item)
+		}
+
+		todo.List = itemList
+
 		todoList = append(todoList, todo)
 	}
-	fmt.Println(todoList)
+	// fmt.Println(todoList)
+
+	if err != nil {
+		error_resp := responses.UnknownError{Status: 404, Message: "some error occured while fetching data"}
+		json.NewEncoder(w).Encode(error_resp)
+		panic(err.Error())
+	}
+	succ_resp := responses.FoundTodos{Status: 200, Message: "found todos", Todos: todoList}
+	json.NewEncoder(w).Encode(succ_resp)
 
 }
 
@@ -117,9 +146,38 @@ func GetAllTodoByUserId(w http.ResponseWriter, req *http.Request) {
 			log.Fatal(err)
 		}
 
+		sql1 := "select * from todo_list_item where tli_list_id='" + todo.Id + "'"
+
+		res1, err1 := db.Query(sql1)
+
+		if err1 != nil {
+			log.Fatal(err1)
+		}
+
+		var itemList []models.ListItem
+		for res1.Next() {
+			var item models.ListItem
+			err := res1.Scan(&item.ItemListId, &item.ItemId, &item.ItemName, &item.ItemStatus, &item.ItemPriority)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			itemList = append(itemList, item)
+		}
+
+		todo.List = itemList
+
 		todoList = append(todoList, todo)
 	}
-	fmt.Println(todoList)
+	// fmt.Println(todoList)
+
+	if err != nil {
+		error_resp := responses.UnknownError{Status: 404, Message: "some error occured while fetching data"}
+		json.NewEncoder(w).Encode(error_resp)
+		panic(err.Error())
+	}
+	succ_resp := responses.FoundTodos{Status: 200, Message: "found todos", Todos: todoList}
+	json.NewEncoder(w).Encode(succ_resp)
 }
 
 func DeleteTodoById(w http.ResponseWriter, req *http.Request) {
@@ -175,7 +233,38 @@ func GetTodoById(w http.ResponseWriter, req *http.Request) {
 			log.Fatal(err)
 		}
 
+		sql1 := "select * from todo_list_item where tli_list_id='" + todo.Id + "'"
+
+		res1, err1 := db.Query(sql1)
+
+		if err1 != nil {
+			log.Fatal(err1)
+		}
+
+		var itemList []models.ListItem
+		for res1.Next() {
+			var item models.ListItem
+			err := res1.Scan(&item.ItemListId, &item.ItemId, &item.ItemName, &item.ItemStatus, &item.ItemPriority)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			itemList = append(itemList, item)
+		}
+
+		todo.List = itemList
+
 		todoList = append(todoList, todo)
 	}
-	fmt.Println(todoList)
+
+	requiredTodo := todoList[0]
+
+	// fmt.Println(todoList)
+	if err != nil {
+		error_resp := responses.UnknownError{Status: 404, Message: "some error occured while fetching data"}
+		json.NewEncoder(w).Encode(error_resp)
+		panic(err.Error())
+	}
+	succ_resp := responses.FoundTodo{Status: 200, Message: "found todos", Todo: requiredTodo}
+	json.NewEncoder(w).Encode(succ_resp)
 }
