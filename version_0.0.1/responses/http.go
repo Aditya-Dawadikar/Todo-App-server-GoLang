@@ -32,6 +32,12 @@ type FoundUsers struct {
 	Users   []models.TodoUser `json:"users`
 }
 
+type FoundUser struct {
+	Status  int             `json:"status"`
+	Message string          `json:"message"`
+	User    models.TodoUser `json:"users`
+}
+
 type FoundTodos struct {
 	Status  int
 	Message string

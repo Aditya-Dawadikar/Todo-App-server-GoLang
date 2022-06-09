@@ -17,7 +17,7 @@ func requestHandler() {
 	Router.HandleFunc("/todo/all/{user_id}", controllers.GetAllTodoByUserId).Methods("GET")
 
 	Router.HandleFunc("/todo/{id}", controllers.GetTodoById).Methods("GET")
-	Router.HandleFunc("/todo/{id}", controllers.AddItemById).Methods("PATCH")
+	Router.HandleFunc("/todo/{id}", controllers.AddItemByTodoId).Methods("PATCH")
 	Router.HandleFunc("/todo/{id}", controllers.DeleteTodoById).Methods("DELETE")
 	Router.HandleFunc("/todo/item/{item_id}", controllers.RemoveItemById).Methods("DELETE")
 	Router.HandleFunc("/todo/item/{item_id}", controllers.MarkItemById).Methods("PATCH")

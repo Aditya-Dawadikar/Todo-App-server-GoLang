@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -65,12 +64,13 @@ func GetAllTodo(w http.ResponseWriter, req *http.Request) {
 
 	if err != nil {
 		error_resp := responses.UnknownError{Status: 404, Message: "some error occured while fetching data"}
+		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(error_resp)
 		panic(err.Error())
+	} else {
+		succ_resp := responses.FoundTodos{Status: 200, Message: "found todos", Todos: todoList}
+		json.NewEncoder(w).Encode(succ_resp)
 	}
-	succ_resp := responses.FoundTodos{Status: 200, Message: "found todos", Todos: todoList}
-	json.NewEncoder(w).Encode(succ_resp)
-
 }
 
 func CreateNewTodo(w http.ResponseWriter, req *http.Request) {
@@ -95,11 +95,11 @@ func CreateNewTodo(w http.ResponseWriter, req *http.Request) {
 
 	defer db.Close()
 
-	fmt.Println(todo, unique_id)
+	// fmt.Println(todo, unique_id)
 
 	sql := "insert into todo_list values ('" + todo.OwnerId + "','" + todo.Name + "','" + unique_id + "','" + todo.Desc + "')"
 
-	fmt.Println(sql)
+	// fmt.Println(sql)
 
 	_, err := db.Exec(sql)
 
@@ -108,13 +108,14 @@ func CreateNewTodo(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if err != nil {
-		error_resp := responses.UnknownError{Status: 404, Message: "some error occured while executing insert"}
+		error_resp := responses.UnknownError{Status: 500, Message: "some error occured while executing insert"}
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(error_resp)
 		panic(err.Error())
+	} else {
+		succ_resp := responses.GeneralSuccess{Status: 200, Message: "todo added successfully"}
+		json.NewEncoder(w).Encode(succ_resp)
 	}
-	succ_resp := responses.GeneralSuccess{Status: 200, Message: "todo added successfully"}
-	json.NewEncoder(w).Encode(succ_resp)
-
 }
 
 func GetAllTodoByUserId(w http.ResponseWriter, req *http.Request) {
@@ -130,7 +131,7 @@ func GetAllTodoByUserId(w http.ResponseWriter, req *http.Request) {
 
 	sql := "select * from todo_list where tl_owner_id='" + id + "'"
 
-	fmt.Println(sql)
+	// fmt.Println(sql)
 
 	res, err := db.Query(sql)
 
@@ -172,12 +173,14 @@ func GetAllTodoByUserId(w http.ResponseWriter, req *http.Request) {
 	// fmt.Println(todoList)
 
 	if err != nil {
-		error_resp := responses.UnknownError{Status: 404, Message: "some error occured while fetching data"}
+		error_resp := responses.UnknownError{Status: 500, Message: "some error occured while fetching data"}
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(error_resp)
 		panic(err.Error())
+	} else {
+		succ_resp := responses.FoundTodos{Status: 200, Message: "found todos", Todos: todoList}
+		json.NewEncoder(w).Encode(succ_resp)
 	}
-	succ_resp := responses.FoundTodos{Status: 200, Message: "found todos", Todos: todoList}
-	json.NewEncoder(w).Encode(succ_resp)
 }
 
 func DeleteTodoById(w http.ResponseWriter, req *http.Request) {
@@ -190,7 +193,7 @@ func DeleteTodoById(w http.ResponseWriter, req *http.Request) {
 
 	sql := "delete from todo_list where tl_id='" + id + "'"
 
-	fmt.Println(sql)
+	// fmt.Println(sql)
 
 	_, err := db.Exec(sql)
 
@@ -199,7 +202,8 @@ func DeleteTodoById(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if err != nil {
-		error_resp := responses.UnknownError{Status: 404, Message: "some error occured while executing delete"}
+		error_resp := responses.UnknownError{Status: 500, Message: "some error occured while executing delete"}
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(error_resp)
 		panic(err.Error())
 	}
@@ -262,9 +266,11 @@ func GetTodoById(w http.ResponseWriter, req *http.Request) {
 	// fmt.Println(todoList)
 	if err != nil {
 		error_resp := responses.UnknownError{Status: 404, Message: "some error occured while fetching data"}
+		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(error_resp)
 		panic(err.Error())
+	} else {
+		succ_resp := responses.FoundTodo{Status: 200, Message: "found todos", Todo: requiredTodo}
+		json.NewEncoder(w).Encode(succ_resp)
 	}
-	succ_resp := responses.FoundTodo{Status: 200, Message: "found todos", Todo: requiredTodo}
-	json.NewEncoder(w).Encode(succ_resp)
 }

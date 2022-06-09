@@ -79,6 +79,7 @@ func LoginUser(w http.ResponseWriter, req *http.Request) {
 
 	if userid == "" {
 		error_resp := responses.LoginError{Status: 404, Message: "User not found, register new user"}
+		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(error_resp)
 	} else {
 		succ_resp := responses.LoginSuccess{Status: 200, Message: "User found", Username: auth_user.Username, Userid: userid}
@@ -115,8 +116,15 @@ func GetUserById(w http.ResponseWriter, req *http.Request) {
 		userList = append(userList, user)
 	}
 
-	succ_resp := responses.FoundUsers{Status: 200, Message: "User found", Users: userList}
-	json.NewEncoder(w).Encode(succ_resp)
+	if userList != nil {
+		succ_resp := responses.FoundUser{Status: 200, Message: "User found", User: userList[0]}
+		json.NewEncoder(w).Encode(succ_resp)
+	} else {
+		error_resp := responses.LoginError{Status: 404, Message: "User not found"}
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(error_resp)
+	}
+
 }
 
 func GetAllUsers(w http.ResponseWriter, req *http.Request) {
@@ -144,8 +152,14 @@ func GetAllUsers(w http.ResponseWriter, req *http.Request) {
 		userList = append(userList, user)
 	}
 
-	succ_resp := responses.FoundUsers{Status: 200, Message: "User found", Users: userList}
-	json.NewEncoder(w).Encode(succ_resp)
+	if userList != nil {
+		succ_resp := responses.FoundUsers{Status: 200, Message: "User found", Users: userList}
+		json.NewEncoder(w).Encode(succ_resp)
+	} else {
+		error_resp := responses.LoginError{Status: 404, Message: "No users found"}
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(error_resp)
+	}
 }
 
 func DeleteUser(w http.ResponseWriter, req *http.Request) {

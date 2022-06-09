@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -14,7 +13,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func AddItemById(w http.ResponseWriter, req *http.Request) {
+func AddItemByTodoId(w http.ResponseWriter, req *http.Request) {
 	req_body, _ := ioutil.ReadAll(req.Body)
 	params := mux.Vars(req)
 	id := params["id"]
@@ -42,7 +41,7 @@ func AddItemById(w http.ResponseWriter, req *http.Request) {
 
 	sql := "insert into todo_list_item values ('" + id + "','" + unique_id + "','" + item.ItemName + "','" + item.ItemStatus + "','" + strconv.FormatInt(item.ItemPriority, 10) + "')"
 
-	fmt.Println(sql)
+	// fmt.Println(sql)
 
 	_, err := db.Exec(sql)
 
@@ -52,11 +51,13 @@ func AddItemById(w http.ResponseWriter, req *http.Request) {
 
 	if err != nil {
 		error_resp := responses.UnknownError{Status: 404, Message: "some error occured while executing insert"}
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(error_resp)
 		panic(err.Error())
+	} else {
+		succ_resp := responses.GeneralSuccess{Status: 200, Message: "todo item added successfully"}
+		json.NewEncoder(w).Encode(succ_resp)
 	}
-	succ_resp := responses.GeneralSuccess{Status: 200, Message: "todo item added successfully"}
-	json.NewEncoder(w).Encode(succ_resp)
 }
 
 func RemoveItemById(w http.ResponseWriter, req *http.Request) {
@@ -69,7 +70,7 @@ func RemoveItemById(w http.ResponseWriter, req *http.Request) {
 
 	sql := "delete from todo_list_item where tli_id='" + id + "'"
 
-	fmt.Println(sql)
+	// fmt.Println(sql)
 
 	_, err := db.Exec(sql)
 
@@ -78,12 +79,14 @@ func RemoveItemById(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if err != nil {
-		error_resp := responses.UnknownError{Status: 404, Message: "some error occured while executing delete"}
+		error_resp := responses.UnknownError{Status: 500, Message: "some error occured while executing delete"}
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(error_resp)
 		panic(err.Error())
+	} else {
+		succ_resp := responses.GeneralSuccess{Status: 200, Message: "todo item removed successfully"}
+		json.NewEncoder(w).Encode(succ_resp)
 	}
-	succ_resp := responses.GeneralSuccess{Status: 200, Message: "todo item removed successfully"}
-	json.NewEncoder(w).Encode(succ_resp)
 }
 
 func MarkItemById(w http.ResponseWriter, req *http.Request) {
@@ -105,11 +108,11 @@ func MarkItemById(w http.ResponseWriter, req *http.Request) {
 
 	defer db.Close()
 
-	fmt.Println(itemStatus)
+	// fmt.Println(itemStatus)
 
 	sql := "update todo_list_item set tli_status='" + itemStatus.Status + "' where tli_id='" + id + "'"
 
-	fmt.Println(sql)
+	// fmt.Println(sql)
 
 	_, err := db.Exec(sql)
 
@@ -118,10 +121,12 @@ func MarkItemById(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if err != nil {
-		error_resp := responses.UnknownError{Status: 404, Message: "some error occured while executing update"}
+		error_resp := responses.UnknownError{Status: 500, Message: "some error occured while executing update"}
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(error_resp)
 		panic(err.Error())
+	} else {
+		succ_resp := responses.GeneralSuccess{Status: 200, Message: "todo item updated successfully"}
+		json.NewEncoder(w).Encode(succ_resp)
 	}
-	succ_resp := responses.GeneralSuccess{Status: 200, Message: "todo item updated successfully"}
-	json.NewEncoder(w).Encode(succ_resp)
 }
