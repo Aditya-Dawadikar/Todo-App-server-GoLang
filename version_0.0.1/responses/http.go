@@ -11,6 +11,11 @@ type LoginSuccess struct {
 	Userid   string `json:"userid"`
 }
 
+type GeneralSuccess struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+}
+
 type LoginError struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`
@@ -18,7 +23,7 @@ type LoginError struct {
 
 type UnknownError struct {
 	Status  int    `json:"status"`
-	Message string `json:"unknown error occured"`
+	Message string `json:"message"`
 }
 
 type FoundUsers struct {
