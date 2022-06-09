@@ -17,10 +17,10 @@ func requestHandler() {
 	Router.HandleFunc("/todo/all/{user_id}", controllers.GetAllTodoByUserId).Methods("GET")
 
 	Router.HandleFunc("/todo/{id}", controllers.GetTodoById).Methods("GET")
-	Router.HandleFunc("/todo/{id}", controllers.AddItemById).Methods("UPDATE")
+	Router.HandleFunc("/todo/{id}", controllers.AddItemById).Methods("PATCH")
 	Router.HandleFunc("/todo/{id}", controllers.DeleteTodoById).Methods("DELETE")
-	Router.HandleFunc("/todo/{id}/item/{item_id}", controllers.RemoveItemById).Methods("UPDATE")
-	Router.HandleFunc("/todo/{id}/item/{item_id}", controllers.MarkItemById).Methods("UPDATE")
+	Router.HandleFunc("/todo/item/{item_id}", controllers.RemoveItemById).Methods("DELETE")
+	Router.HandleFunc("/todo/item/{item_id}", controllers.MarkItemById).Methods("PATCH")
 
 	Router.HandleFunc("/user/login", controllers.LoginUser).Methods("POST")
 	Router.HandleFunc("/user/signup", controllers.RegisterUser).Methods("POST")
