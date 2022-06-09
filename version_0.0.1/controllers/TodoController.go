@@ -16,13 +16,11 @@ import (
 
 func GetAllTodo(w http.ResponseWriter, req *http.Request) {
 	db := database.GetConnection()
-
 	defer db.Close()
 
 	var todoList []models.TodoList
 
 	sql := "select * from todo_list"
-
 	res, err := db.Query(sql)
 
 	if err != nil {
@@ -60,7 +58,6 @@ func GetAllTodo(w http.ResponseWriter, req *http.Request) {
 
 		todoList = append(todoList, todo)
 	}
-	// fmt.Println(todoList)
 
 	if err != nil {
 		error_resp := responses.UnknownError{Status: 404, Message: "some error occured while fetching data"}
@@ -95,11 +92,7 @@ func CreateNewTodo(w http.ResponseWriter, req *http.Request) {
 
 	defer db.Close()
 
-	// fmt.Println(todo, unique_id)
-
 	sql := "insert into todo_list values ('" + todo.OwnerId + "','" + todo.Name + "','" + unique_id + "','" + todo.Desc + "')"
-
-	// fmt.Println(sql)
 
 	_, err := db.Exec(sql)
 
