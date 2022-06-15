@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"todo_service/version_0.0.1/auth"
 	"todo_service/version_0.0.1/database"
 	"todo_service/version_0.0.1/models"
 	"todo_service/version_0.0.1/responses"
@@ -53,6 +54,7 @@ func RegisterUser(w http.ResponseWriter, req *http.Request) {
 	if auth_user.Username == "" || auth_user.Password == "" {
 		error_resp := responses.UnknownError{Status: 403, Message: "user credentials are missing"}
 		w.WriteHeader(http.StatusForbidden)
+		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(error_resp)
 		return
 	}
@@ -60,6 +62,7 @@ func RegisterUser(w http.ResponseWriter, req *http.Request) {
 	if checkUserExists(auth_user.Username, auth_user.Password) {
 		error_resp := responses.UnknownError{Status: 400, Message: "This username and password already exists"}
 		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(error_resp)
 		return
 	}
@@ -77,10 +80,12 @@ func RegisterUser(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		error_resp := responses.UnknownError{Status: 500, Message: "some error occured while executing insert"}
 		w.WriteHeader(http.StatusInternalServerError)
+		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(error_resp)
 		return
 	}
 	succ_resp := responses.LoginSuccess{Status: 200, Message: "User registered successfully", Username: auth_user.Username, Userid: unique_id}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(succ_resp)
 
 }
@@ -109,8 +114,8 @@ func LoginUser(w http.ResponseWriter, req *http.Request) {
 		json.NewEncoder(w).Encode(error_resp)
 		return
 	}
-
-	succ_resp := responses.LoginSuccess{Status: 200, Message: "User found", Username: auth_user.Username, Userid: userid}
+	token, err := auth.GenerateJWT(auth_user.Username)
+	succ_resp := responses.LoginSuccess{Status: 200, Message: "User found", Username: auth_user.Username, Userid: userid, Token: token}
 	json.NewEncoder(w).Encode(succ_resp)
 
 }

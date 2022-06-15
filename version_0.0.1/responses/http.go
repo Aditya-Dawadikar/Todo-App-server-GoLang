@@ -9,6 +9,7 @@ type LoginSuccess struct {
 	Message  string `json:"message"`
 	Username string `json:"username"`
 	Userid   string `json:"userid"`
+	Token    string `json:"jwt"`
 }
 
 type GeneralSuccess struct {
@@ -17,6 +18,11 @@ type GeneralSuccess struct {
 }
 
 type LoginError struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+}
+
+type AuthError struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`
 }
