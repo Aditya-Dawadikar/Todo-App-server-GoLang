@@ -13,6 +13,9 @@ func requestHandler() {
 
 	Router := mux.NewRouter().StrictSlash(true)
 
+	fs := http.FileServer(http.Dir("./public/"))
+	Router.PathPrefix("/public/").Handler(http.StripPrefix("/public/", fs))
+
 	Router.Handle("/todo", auth.IsAuthorized(controllers.CreateNewTodo)).Methods("POST")
 	Router.Handle("/todo/all", auth.IsAuthorized(controllers.GetAllTodo)).Methods("GET")
 	Router.Handle("/todo/all/{user_id}", auth.IsAuthorized(controllers.GetAllTodoByUserId)).Methods("GET")
